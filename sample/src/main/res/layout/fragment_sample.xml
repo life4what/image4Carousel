@@ -31,7 +31,7 @@
             app:layout_constraintDimensionRatio="3:2"
             app:layout_constraintTop_toBottomOf="@+id/tv_caption">
 
-            <org.imaginativeworld.whynotimagecarousel.ImageCarousel
+            <org.life4what.image4carousel.ImageCarousel
                 android:id="@+id/carousel"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

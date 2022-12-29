@@ -7,7 +7,7 @@ android {
     buildToolsVersion "31.0.0"
 
     defaultConfig {
-        applicationId "org.imaginativeworld.whynotimagecarousel.sample"
+        applicationId "org.life4what.image4carousel.sample"
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 1
