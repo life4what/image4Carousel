@@ -1,18 +1,38 @@
 buildscript {
+    ext.kotlin_version = '1.6.10'
     repositories {
+        google()
         mavenCentral()
     }
     dependencies {
+        classpath 'com.android.tools.build:gradle:7.1.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.vanniktech:gradle-maven-publish-plugin:0.19.0'
         classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.6.10'
     }
 }
 
+task prepareKotlinBuildScriptModel {
+
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'maven-publish'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: "com.vanniktech.maven.publish"
 apply plugin: "org.jetbrains.dokka"
+
+task wrapper(type: Wrapper){
+    gradleVersion = '7.2'
+}
 
 android {
     compileSdkVersion 31
@@ -21,6 +41,10 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 31
+        versionCode 1
+        versionName project.properties['VERSION_NAME']
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -42,6 +66,29 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    publishing {
+        publishing {
+            singleVariant("release") {
+                // if you don't want sources/javadoc, remove these lines
+                withSourcesJar()
+                withJavadocJar()
+            }
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId 'org.life4what.image4carousel'
+                artifactId 'image4carousel'
+                version = android.defaultConfig.versionName // or manually '1.0'
+            }
+        }
+    }
 }
 
 dependencies {
@@ -62,3 +109,26 @@ dependencies {
     // Circle Indicator
     implementation 'me.relex:circleindicator:2.1.6'
 }
+
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
+publishing {
+    publications {
+        bar(MavenPublication) {
+            groupId 'org.life4what.image4carousel'
+            artifactId 'image4carousel'
+            version '0.1'
+            artifact(sourceJar)
+            artifact("$buildDir/outputs/aar/bar-release.aar")
+        }
+    }
+    repositories {
+        maven {
+            url "$buildDir/repo"
+        }
+    }
+}
+
